@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /fogli/{id} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['t','m','c','a','i','d','uid'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.t is string && request.resource.data.t.size() <= 60
+        && request.resource.data.m is string && request.resource.data.m.size() <= 400
+        && request.resource.data.a is string && request.resource.data.a.size() <= 30
+        && request.resource.data.c is string && request.resource.data.c.size() <= 20
+        && request.resource.data.i is bool
+        && request.resource.data.d is number;
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['i']);
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+    }
+  }
+}

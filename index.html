@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bacheca ITIS SGM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600;800&display=swap">
+<style>
+:root{
+  --board:#e4d3b0; --board-edge:#a9784a; --ink:#2b2420; --chrome:#fffaf0; --chrome-ink:#2b2420; --muted:#6d6155;
+  --y:#ffe27a; --p:#ffb8c6; --b:#a9d6f5; --g:#b8e6c1; --o:#ffc38a; --pin:#d6362f;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--board:#4a3b2a;--board-edge:#2a1f15;--chrome:#2a2420;--chrome-ink:#f4ece0;--muted:#b9ab9a}
+}
+:root[data-theme="dark"]{--board:#4a3b2a;--board-edge:#2a1f15;--chrome:#2a2420;--chrome-ink:#f4ece0;--muted:#b9ab9a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;background:var(--board-edge);color:var(--chrome-ink)}
+.wrap{max-width:1000px;margin:0 auto;padding:14px}
+header,.card{background:var(--chrome);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+h1{font-family:Caveat,cursive;font-size:2.4rem;line-height:1;margin:0}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.95rem}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.chip{border:2px solid var(--chrome-ink);background:transparent;color:var(--chrome-ink);border-radius:99px;padding:6px 12px;font:600 .9rem Nunito,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--chrome-ink);color:var(--chrome)}
+input,select,textarea{font:inherit;color:var(--ink);background:#fffdf7;border:2px solid #8a7660;border-radius:10px;padding:9px 10px;width:100%}
+.search{flex:1;min-width:150px;max-width:260px;padding:6px 12px;border-radius:99px}
+.add{background:var(--pin);color:#fff;border:0;border-radius:99px;padding:9px 16px;font:800 .95rem Nunito,sans-serif;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #2f6fed;outline-offset:2px}
+.board{background:var(--board);background-image:radial-gradient(rgba(0,0,0,.07) 1px,transparent 1.5px);background-size:10px 10px;border-radius:14px;padding:22px 16px;min-height:60vh;columns:2 220px;column-gap:18px;box-shadow:inset 0 0 0 6px var(--board-edge),inset 0 0 20px rgba(0,0,0,.25)}
+.note{position:relative;break-inside:avoid;margin:0 0 20px;padding:26px 16px 14px;background:var(--c);color:var(--ink);border-radius:3px;box-shadow:2px 4px 8px rgba(0,0,0,.28);transform:rotate(var(--r))}
+.note::before{content:"";position:absolute;top:8px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--pin);box-shadow:1px 3px 3px rgba(0,0,0,.35),inset -2px -2px 3px rgba(0,0,0,.25)}
+.note.imp{outline:3px dashed var(--pin);outline-offset:-6px}
+.tag{font-weight:800;font-size:.8rem;opacity:.75}
+.note h2{font-family:Caveat,cursive;font-size:1.6rem;line-height:1.05;margin:2px 0 6px}
+.note p{margin:0 0 10px;font-size:.95rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:.8rem;opacity:.85}
+.acts button{background:rgba(255,255,255,.55);border:0;border-radius:8px;padding:4px 8px;font:600 .8rem Nunito,sans-serif;cursor:pointer;color:var(--ink)}
+.strip{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--chrome);border-radius:14px;padding:10px 16px;margin-bottom:12px;font-weight:600;font-size:.92rem}
+.cd{background:var(--pin);color:#fff;border-radius:99px;padding:2px 12px;font-weight:800}
+.sec{font-family:Caveat,cursive;font-size:2rem;line-height:1;margin:0}
+.card{padding:16px 18px;margin-bottom:12px;border-radius:14px}
+.offgrid{display:grid;gap:8px;margin-top:12px}
+.av{border:2px solid var(--muted);border-left:10px solid var(--muted);border-radius:10px;padding:10px 14px}
+.av.urg{border-color:var(--pin)}
+.av h3{margin:0 0 4px;font-size:1.05rem}
+.av p{margin:0 0 6px;white-space:pre-wrap;overflow-wrap:anywhere}
+.av small{color:var(--muted)}
+.ut{background:var(--pin);color:#fff;border-radius:99px;padding:1px 9px;font-size:.75rem;font-weight:800;margin-right:6px}
+.sl{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.9rem;border-bottom:1px solid var(--muted);padding:4px 0}
+.sl button{font:600 .8rem Nunito,sans-serif;cursor:pointer}
+#sj{font:.8rem ui-monospace,monospace;height:120px;color:var(--ink)}
+.note.other .acts{display:none}
+.empty{text-align:center;padding:50px 10px;font-family:Caveat,cursive;font-size:1.7rem;color:var(--ink)}
+dialog{border:0;border-radius:14px;padding:0;width:min(440px,92vw);background:var(--chrome);color:var(--chrome-ink)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+form,.fm{padding:18px;display:grid;gap:10px}
+.fm h3,form h3{font-family:Caveat,cursive;font-size:1.9rem;margin:0}
+label{font-weight:700;font-size:.9rem;display:grid;gap:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.btns .chip{border-color:var(--muted)}
+.foot{color:#fffaf0;text-align:center;font-size:.8rem;margin:10px 0 4px;opacity:.85}
+@media (prefers-reduced-motion:no-preference){.note{transition:transform .15s}.note:hover{transform:rotate(0) scale(1.02)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="school">📌 Bacheca ITIS SGM</h1>
+    <p class="sub">Avvisi, eventi e annunci degli studenti dell’ITIS SGM, tutti in un posto.</p>
+  </header>
+
+  <div class="strip"><span id="quote"></span><span class="cd" id="cd"></span></div>
+
+  <section class="card" aria-labelledby="ho">
+    <h2 class="sec" id="ho">📢 Avvisi ufficiali</h2>
+    <p class="sub">Pubblicati solo dallo staff della scuola.</p>
+    <div class="offgrid" id="official"></div>
+  </section>
+
+  <section class="card" aria-labelledby="hs">
+    <h2 class="sec" id="hs">🎒 Spazio studenti</h2>
+    <p class="sub">Qui puoi appendere un foglio anche tu: eventi, compiti, club e mercatino.</p>
+    <div class="bar" id="filters" role="group" aria-label="Filtra per categoria"></div>
+    <div class="bar">
+      <input class="search" id="q" type="search" placeholder="Cerca nello spazio studenti" aria-label="Cerca">
+      <button class="add" id="open">+ Nuovo foglio</button>
+    </div>
+  </section>
+
+  <main class="board" id="board" aria-live="polite"></main>
+
+  <p class="foot">
+    <span id="fnote">I fogli degli studenti sono salvati su questo dispositivo.</span>
+    <button class="chip" id="staff" style="color:#fffaf0;border-color:#fffaf0;padding:2px 10px">🔑 Area staff</button>
+  </p>
+</div>
+
+<dialog id="dlg">
+  <form id="f" method="dialog">
+    <h3>Appendi un foglio</h3>
+    <label>Titolo<input id="t" required maxlength="60" placeholder="Es. Torneo di pallavolo"></label>
+    <label>Messaggio<textarea id="m" required rows="4" maxlength="400" placeholder="Scrivi cosa, quando e dove"></textarea></label>
+    <div class="row">
+      <label>Categoria<select id="c"></select></label>
+      <label>Firma<input id="a" required maxlength="30" placeholder="Nome e classe, es. Sara 3B"></label>
+    </div>
+    <label style="display:flex;gap:8px;align-items:center;grid-template-columns:none"><input id="i" type="checkbox" style="width:auto"> Segna come importante</label>
+    <div class="btns">
+      <button type="button" class="chip" id="cancel">Annulla</button>
+      <button type="submit" class="add">Appendi</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="sd">
+  <div class="fm">
+    <h3>Area staff</h3>
+    <p class="sub">Prepara gli avvisi qui, poi incolla il testo in <b>avvisi.json</b> su GitHub (matita, incolla, Commit). Solo chi ha accesso in scrittura al repository può pubblicarli.</p>
+    <label>Titolo<input id="sT" maxlength="80" placeholder="Es. Uscita anticipata venerdì"></label>
+    <label>Testo<textarea id="sM" rows="3" maxlength="400"></textarea></label>
+    <label style="display:flex;gap:8px;align-items:center"><input id="sU" type="checkbox" style="width:auto"> Urgente</label>
+    <button type="button" class="add" id="sAdd">Aggiungi all’elenco</button>
+    <div id="slist"></div>
+    <label>Testo da incollare in avvisi.json<textarea id="sj" readonly></textarea></label>
+    <div class="btns">
+      <button type="button" class="chip" id="sCopy">Copia</button>
+      <button type="button" class="chip" id="sClose">Chiudi</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="config.js"></script>
+<script>
+var CATS={"Eventi":"var(--p)","Compiti":"var(--b)","Club":"var(--g)","Mercatino":"var(--o)","Altro":"var(--y)"};
+var KEY="bacheca-alunni-v1", notes=[], filter="Tutti";
+var seed=[
+ {id:1,t:"Assemblea d’istituto",m:"Venerdì alle 10:00 in palestra. Portate le proposte per la gita di fine anno.",c:"Eventi",a:"Rappresentanti",i:true,d:Date.now()-3e6},
+ {id:2,t:"Torneo di pallavolo",m:"Iscrizioni aperte fino a giovedì. Squadre da 6, anche miste.",c:"Eventi",a:"Marco 4A",i:false,d:Date.now()-2e6},
+ {id:3,t:"Ripasso di matematica",m:"Martedì e giovedì, aula 12, dopo la mensa. Si parte dalle equazioni.",c:"Compiti",a:"Giulia 5C",i:false,d:Date.now()-1e6},
+ {id:4,t:"Cerchiamo chitarristi",m:"Il club di musica prepara il concerto di primavera. Provate con noi il lunedì.",c:"Club",a:"Club Musica",i:false,d:Date.now()-5e5},
+ {id:5,t:"Vendo libri di biologia",m:"Terza edizione, pochi appunti a matita. 15 euro. Cercami in 2D.",c:"Mercatino",a:"Luca 2D",i:false,d:Date.now()-2e5}
+];
+function load(){try{var s=localStorage.getItem(KEY);if(s)return JSON.parse(s)}catch(e){}return seed.slice()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(notes))}catch(e){}}
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function fdate(t){return new Date(t).toLocaleDateString("it-IT",{day:"numeric",month:"short"})}
+function rot(id){var h=0,t=String(id);for(var k=0;k<t.length;k++)h=(h*31+t.charCodeAt(k))|0;return ((Math.abs(h)%9)-4)/2+"deg"}
+
+function chips(){
+  var el=document.getElementById("filters");el.innerHTML="";
+  ["Tutti"].concat(Object.keys(CATS)).forEach(function(n){
+    var b=document.createElement("button");b.className="chip";b.textContent=n;
+    b.setAttribute("aria-pressed",n===filter);
+    b.onclick=function(){filter=n;chips();render()};el.appendChild(b);
+  });
+}
+function render(){
+  var source = (window.notes && window.notes.length) ? window.notes : notes;
+  var q=document.getElementById("q").value.toLowerCase().trim();
+  var list=source.filter(function(n){
+    return (filter==="Tutti"||n.c===filter)&&(!q||(n.t+" "+n.m+" "+n.a).toLowerCase().indexOf(q)>-1);
+  }).sort(function(a,b){return (b.i-a.i)||(b.d-a.d)});
+  var el=document.getElementById("board");
+  if(!list.length){el.innerHTML='<div class="empty">Nessun foglio qui. Appendi il primo!</div>';return}
+  el.innerHTML=list.map(function(n){
+    return '<article class="note'+(n.mine===false?' other':'')+(n.i?' imp':'')+'" style="--c:'+(CATS[n.c]||'var(--y)')+';--r:'+rot(n.id)+'">'+
+      '<span class="tag">'+esc(n.c)+(n.i?' · Importante':'')+'</span>'+
+      '<h2>'+esc(n.t)+'</h2><p>'+esc(n.m)+'</p>'+
+      '<div class="meta"><span>'+esc(n.a)+', '+fdate(n.d)+'</span><span class="acts">'+
+      '<button data-star="'+n.id+'" aria-label="Segna importante">'+(n.i?'Togli':'Importante')+'</button> '+
+      '<button data-del="'+n.id+'" aria-label="Elimina">Elimina</button></span></div></article>';
+  }).join("");
+}
+document.getElementById("board").addEventListener("click",function(e){
+  var s=e.target.getAttribute("data-star"),d=e.target.getAttribute("data-del");
+  if(s){var n0=notes.filter(function(n){return n.id==s})[0];
+    if(window.cloud){cloud.star(n0.id,!n0.i)}else{n0.i=!n0.i;save();render()}}
+  if(d&&confirm("Eliminare questo foglio?")){
+    if(window.cloud){cloud.del(d)}else{notes=notes.filter(function(n){return n.id!=d});save();render()}}
+});
+document.getElementById("q").addEventListener("input",render);
+
+var dlg=document.getElementById("dlg"),sel=document.getElementById("c");
+Object.keys(CATS).forEach(function(k){var o=document.createElement("option");o.textContent=k;sel.appendChild(o)});
+document.getElementById("open").onclick=function(){dlg.showModal();document.getElementById("t").focus()};
+document.getElementById("cancel").onclick=function(){dlg.close()};
+document.getElementById("f").addEventListener("submit",function(){
+  var o={id:Date.now(),t:document.getElementById("t").value.trim(),m:document.getElementById("m").value.trim(),
+    c:sel.value,a:document.getElementById("a").value.trim(),i:document.getElementById("i").checked,d:Date.now()};
+  if(window.cloud){cloud.add(o)}else{notes.push(o);save()}
+  this.reset();filter="Tutti";chips();render();
+});
+var AVD=[{titolo:"Benvenuti sulla bacheca",testo:"Gli avvisi ufficiali compaiono qui e li pubblica solo lo staff.",data:"2026-10-20",urgente:false}];
+var AV=AVD;
+function renderOff(){
+  var el=document.getElementById("official");
+  var l=AV.slice().sort(function(a,b){return (b.urgente?1:0)-(a.urgente?1:0)||String(b.data).localeCompare(String(a.data))});
+  el.innerHTML=l.length?l.map(function(a){
+    return '<article class="av'+(a.urgente?' urg':'')+'"><h3>'+(a.urgente?'<span class="ut">URGENTE</span>':'')+esc(a.titolo)+'</h3><p>'+esc(a.testo)+'</p><small>'+fdate(a.data)+'</small></article>';
+  }).join(""):'<p class="sub">Nessun avviso al momento.</p>';
+}
+renderOff();
+try{fetch("avvisi.json",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){if(Array.isArray(d)){AV=d;renderOff()}}).catch(function(){})}catch(e){}
+
+var sd=document.getElementById("sd"),draft=[];
+function drawDraft(){
+  document.getElementById("slist").innerHTML=draft.map(function(a,i){
+    return '<div class="sl"><span>'+(a.urgente?'🔴 ':'')+esc(a.titolo)+'</span><button data-rm="'+i+'">Rimuovi</button></div>';
+  }).join("");
+  document.getElementById("sj").value=JSON.stringify(draft,null,2);
+}
+document.getElementById("staff").onclick=function(){draft=AV.slice();drawDraft();sd.showModal()};
+document.getElementById("sClose").onclick=function(){sd.close()};
+document.getElementById("sAdd").onclick=function(){
+  var t=document.getElementById("sT").value.trim(),m=document.getElementById("sM").value.trim();
+  if(!t||!m){alert("Scrivi titolo e testo.");return}
+  draft.unshift({titolo:t,testo:m,data:new Date().toISOString().slice(0,10),urgente:document.getElementById("sU").checked});
+  document.getElementById("sT").value="";document.getElementById("sM").value="";document.getElementById("sU").checked=false;drawDraft();
+};
+document.getElementById("slist").addEventListener("click",function(e){var i=e.target.getAttribute("data-rm");if(i!==null){draft.splice(+i,1);drawDraft()}});
+document.getElementById("sCopy").onclick=function(){
+  var ta=document.getElementById("sj");ta.select();
+  try{navigator.clipboard.writeText(ta.value)}catch(e){try{document.execCommand("copy")}catch(e2){}}
+  this.textContent="Copiato!";var b=this;setTimeout(function(){b.textContent="Copia"},1500);
+};
+
+var Q=["Oggi è un buon giorno per imparare qualcosa di nuovo.","Un errore nel codice è solo un test che ti insegna qualcosa.","Chiedi aiuto ai compagni: si impara meglio insieme.","Un passo alla volta, anche il progetto più grande si finisce.","Spegni il telefono per un’ora e guarda quanto sei veloce.","Se funziona al primo colpo, controlla di nuovo.","Il lunedì passa, il weekend arriva."];
+var now=new Date();document.getElementById("quote").textContent="💡 "+Q[Math.floor(now/864e5)%Q.length];
+var x=new Date(now.getFullYear(),11,23);if(now>x)x=new Date(now.getFullYear()+1,11,23);
+var dd=Math.ceil((x-now)/864e5);document.getElementById("cd").textContent="🎄 "+dd+(dd===1?" giorno":" giorni")+" alle vacanze di Natale";
+notes=load();window.notes=notes;chips();render();
+</script>
+
+<script type="module">
+const C=window.FIREBASE_CONFIG;
+if(C && C.apiKey){
+  try{
+    const V="https://www.gstatic.com/firebasejs/10.12.2/";
+    const {initializeApp}=await import(V+"firebase-app.js");
+    const {getAuth,signInAnonymously}=await import(V+"firebase-auth.js");
+    const {getFirestore,collection,addDoc,deleteDoc,updateDoc,doc,onSnapshot,query,orderBy,limit}=await import(V+"firebase-firestore.js");
+
+    const app=initializeApp(C);
+    const db=getFirestore(app);
+    const uid=(await signInAnonymously(getAuth(app))).user.uid;
+    const col=collection(db,"fogli");
+
+    window.cloud={
+      add:o=>addDoc(col,{t:o.t,m:o.m,c:o.c,a:o.a,i:o.i,d:Date.now(),uid}),
+      del:id=>deleteDoc(doc(db,"fogli",id)),
+      star:(id,v)=>updateDoc(doc(db,"fogli",id),{i:v})
+    };
+
+    document.getElementById("fnote").textContent="I fogli degli studenti sono visibili a tutti.";
+
+    notes = load();
+    window.notes = notes;
+    render();
+
+    onSnapshot(query(col,orderBy("d","desc"),limit(150)),snap=>{
+      notes = snap.docs.map(x => ({...x.data(), id: x.id, mine: x.data().uid === uid}));
+      window.notes = notes;
+      render();
+    },err=>console.error(err));
+
+  }catch(e){
+    console.error("Firebase non disponibile, uso il salvataggio locale.",e);
+  }
+}
+</script>
+</body>
+</html>
