@@ -29,9 +29,9 @@ input,select,textarea{font:inherit;color:var(--ink);background:#fffdf7;border:2p
 .search{flex:1;min-width:150px;max-width:260px;padding:6px 12px;border-radius:99px}
 .add{background:var(--pin);color:#fff;border:0;border-radius:99px;padding:9px 16px;font:800 .95rem Nunito,sans-serif;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #2f6fed;outline-offset:2px}
-.board{background:var(--board);background-image:radial-gradient(rgba(0,0,0,.07) 1px,transparent 1.5px);background-size:10px 10px;border-radius:14px;padding:22px 16px;min-height:60vh;columns:2 220px;column-gap:18px;box-shadow:inset 0 0 0 6px var(--board-edge),inset 0 0 20px rgba(0,0,0,.25)}
-.note{position:relative;break-inside:avoid;margin:0 0 20px;padding:26px 16px 14px;background:var(--c);color:var(--ink);border-radius:3px;box-shadow:2px 4px 8px rgba(0,0,0,.28);transform:rotate(var(--r))}
-.note::before{content:"";position:absolute;top:8px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--pin);box-shadow:1px 3px 3px rgba(0,0,0,.35),inset -2px -2px 3px rgba(0,0,0,.25)}
+.board{background:var(--board);background-image:radial-gradient(rgba(0,0,0,.07) 1px,transparent 1.5px);background-size:10px 10px;border-radius:14px;padding:22px 16px;min-height:60vh;columns:2 220px;column-gap:16px}
+.note{position:relative;break-inside:avoid;margin:0 0 20px;padding:26px 16px 14px;background:var(--c);color:var(--ink);border-radius:3px;box-shadow:2px 4px 8px rgba(0,0,0,.28);transform:rotate(var(--r));}
+.note::before{content:"";position:absolute;top:8px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--pin);box-shadow:1px 3px 3px rgba(0,0,0,.35),inset -2px -2px 3px rgba(0,0,0,.18)}
 .note.imp{outline:3px dashed var(--pin);outline-offset:-6px}
 .tag{font-weight:800;font-size:.8rem;opacity:.75}
 .note h2{font-family:Caveat,cursive;font-size:1.6rem;line-height:1.05;margin:2px 0 6px}
@@ -137,15 +137,20 @@ label{font-weight:700;font-size:.9rem;display:grid;gap:4px}
 <script>
 var CATS={"Eventi":"var(--p)","Compiti":"var(--b)","Club":"var(--g)","Mercatino":"var(--o)","Altro":"var(--y)"};
 var KEY="bacheca-alunni-v1", notes=[], filter="Tutti";
-var seed=[
- {id:1,t:"Assemblea d’istituto",m:"Venerdì alle 10:00 in palestra. Portate le proposte per la gita di fine anno.",c:"Eventi",a:"Rappresentanti",i:true,d:Date.now()-3e6},
- {id:2,t:"Torneo di pallavolo",m:"Iscrizioni aperte fino a giovedì. Squadre da 6, anche miste.",c:"Eventi",a:"Marco 4A",i:false,d:Date.now()-2e6},
- {id:3,t:"Ripasso di matematica",m:"Martedì e giovedì, aula 12, dopo la mensa. Si parte dalle equazioni.",c:"Compiti",a:"Giulia 5C",i:false,d:Date.now()-1e6},
- {id:4,t:"Cerchiamo chitarristi",m:"Il club di musica prepara il concerto di primavera. Provate con noi il lunedì.",c:"Club",a:"Club Musica",i:false,d:Date.now()-5e5},
- {id:5,t:"Vendo libri di biologia",m:"Terza edizione, pochi appunti a matita. 15 euro. Cercami in 2D.",c:"Mercatino",a:"Luca 2D",i:false,d:Date.now()-2e5}
-];
-function load(){try{var s=localStorage.getItem(KEY);if(s)return JSON.parse(s)}catch(e){}return seed.slice()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(notes))}catch(e){}}
+var seed=[];
+function load(){
+  try{
+    var s=localStorage.getItem(KEY);
+    if(s){
+      try{
+        var arr=JSON.parse(s);
+        if(Array.isArray(arr)) return arr;
+      }catch(e){}
+    }
+  }catch(e){}
+  return [];
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(notes))}catch(e){} }
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function fdate(t){return new Date(t).toLocaleDateString("it-IT",{day:"numeric",month:"short"})}
 function rot(id){var h=0,t=String(id);for(var k=0;k<t.length;k++)h=(h*31+t.charCodeAt(k))|0;return ((Math.abs(h)%9)-4)/2+"deg"}
@@ -228,7 +233,7 @@ document.getElementById("sCopy").onclick=function(){
   this.textContent="Copiato!";var b=this;setTimeout(function(){b.textContent="Copia"},1500);
 };
 
-var Q=["Oggi è un buon giorno per imparare qualcosa di nuovo.","Un errore nel codice è solo un test che ti insegna qualcosa.","Chiedi aiuto ai compagni: si impara meglio insieme.","Un passo alla volta, anche il progetto più grande si finisce.","Spegni il telefono per un’ora e guarda quanto sei veloce.","Se funziona al primo colpo, controlla di nuovo.","Il lunedì passa, il weekend arriva."];
+var Q=["Oggi è un buon giorno per imparare qualcosa di nuovo.","Un errore nel codice è solo un test che ti insegna qualcosa.","Chiedi aiuto ai compagni: si impara meglio insieme.","Un passo alla volta fa molta strada.","I progetti migliori nascono con piccoli passi costanti."];
 var now=new Date();document.getElementById("quote").textContent="💡 "+Q[Math.floor(now/864e5)%Q.length];
 var x=new Date(now.getFullYear(),11,23);if(now>x)x=new Date(now.getFullYear()+1,11,23);
 var dd=Math.ceil((x-now)/864e5);document.getElementById("cd").textContent="🎄 "+dd+(dd===1?" giorno":" giorni")+" alle vacanze di Natale";
