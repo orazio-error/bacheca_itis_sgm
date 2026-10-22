@@ -1,14 +1,8 @@
 [
   {
-    "titolo": "Benvenuti sulla bacheca ITIS SGM",
-    "testo": "Gli avvisi ufficiali compaiono qui e li pubblica solo lo staff.",
-    "data": "2026-10-20",
+    "titolo": "benvenuti a tutti",
+    "testo": "benvenuti a tutti sulla nuova bacheca di istituto",
+    "data": "2026-10-22",
     "urgente": false
-  },
-  {
-    "titolo": "Assemblea d’istituto venerdì",
-    "testo": "Alle 10:00 in palestra. Portate le proposte per la gita di fine anno.",
-    "data": "2026-10-19",
-    "urgente": true
   }
 ]
